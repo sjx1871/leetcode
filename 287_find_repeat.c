@@ -26,23 +26,34 @@ int findDuplicate(int* nums, int numsSize){
     return -1;
     */
 
-    /*2 快慢指针法*/
+    /*2 快慢指针法，使用值来计算*/
+#if 0
     /*初始值都从0开始*/
     int *fast = &nums[0];
     int *slow = &nums[0];
     int miss_idx = 0;
     int repeat_num = 0;
 
-    /*查找相遇的点*/
+    /*查找相遇的点法1*/
+    /*slow = &nums[*slow];
+    fast = &nums[*fast];
+    fast = &nums[*fast];
+
+    while(slow != fast)
+    {
+        //slow走一步，fast走两步
+        slow = &nums[*slow];
+        fast = &nums[*fast];
+        fast = &nums[*fast];
+        
+        ++miss_idx;
+    }*/
+    /*查找相遇的点法2*/
     while(1)
     {
-        //printf("slow = %p, *slow = %d fast = %p *fast = %d\n", slow, *slow, fast, *fast);
         if (slow != &nums[0] && slow == fast)
-        {
             break;
-        }
-        
-        /*slow走一步，fast走两步*/
+        //slow走一步，fast走两步
         slow = &nums[*slow];
         fast = &nums[*fast];
         fast = &nums[*fast];
@@ -50,7 +61,6 @@ int findDuplicate(int* nums, int numsSize){
         ++miss_idx;
     }
 
-    //printf("miss_idx = %d, numsSize = %d,  nums[miss_idx] = %d\n", miss_idx, numsSize, nums[miss_idx]);
     if (miss_idx == numsSize)
     {
         printf("overflow\n");
@@ -59,13 +69,9 @@ int findDuplicate(int* nums, int numsSize){
 
     /*慢指针从0开始*/
     slow = &nums[0];
-    while(1)
+    while(slow != fast)
     {   
         //printf("slow = %p, *slow = %d fast = %p *fast = %d\n", slow, *slow, fast, *fast);
-        if (slow == fast)
-        {
-            break;
-        }
         
         /*快慢指针都移动一步*/
         slow = &nums[*slow];
@@ -73,5 +79,30 @@ int findDuplicate(int* nums, int numsSize){
         repeat_num++;
     }
 
+    /*该指针指向的位置的下标即为要获取的结果*/
     return ((void*)slow - (void*)&nums[0])/sizeof(int);//slow - &nums[0];
+#endif
+    
+    /*3 快慢指针法，使用下标来计算*/
+    int fast = 0;
+    int slow = 0;
+
+    while(1)
+    {
+        if (slow != 0 && slow == fast)
+        {
+            break;
+        }
+        slow = nums[slow];
+        fast = nums[nums[fast]];
+    }
+
+    slow = 0;
+    while(slow != fast)
+    {
+        slow = nums[slow];
+        fast = nums[fast];
+    }
+
+    return slow; //or return fast;
 }
